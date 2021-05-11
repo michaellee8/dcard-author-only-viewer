@@ -1,0 +1,8 @@
+{
+  "short_name": "Dcard 作者留言閱讀器",
+  "name": "Dcard 作者留言閱讀器",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
