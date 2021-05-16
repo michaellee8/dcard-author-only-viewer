@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -14,7 +13,7 @@ import { useState, useEffect } from "react";
 const matchers = [/^(\d+)$/, /https:\/\/[\w\.]+\.dcard.tw\/f\/[\w]+\/p\/(\d+)/];
 
 const apiUrl =
-  "http://us-central1-dcard-author-only-viewer.cloudfunctions.net/getAllAuthorCommentsByPost";
+  "https://us-central1-dcard-author-only-viewer.cloudfunctions.net/getAllAuthorCommentsByPost";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -88,38 +87,46 @@ function App() {
   const handleSearchInputOnChange = (event) => {
     setSearchInput(event.target.value);
   };
-  useEffect(async () => {
-    // validate input
-    let postId = null;
-    for (const mat of matchers) {
-      const m = mat.exec(searchInput);
-      if (m === null) {
-        continue;
+  useEffect(() => {
+    (async () => {
+      // validate input
+      let postId = null;
+      for (const mat of matchers) {
+        const m = mat.exec(searchInput);
+        if (m === null) {
+          continue;
+        }
+        postId = m[1];
       }
-      postId = m[1];
-    }
-    if (postId === null) {
-      // prevent fetching if error
-      setIsError(true);
-      return;
-    }
-    try {
-      const searchRes = await window.fetch(apiUrl, {
-        body: JSON.stringify({ searchInput }),
-        headers: {
-          "content-type": "application/json",
-        },
-        method: "POST",
-        mode: "no-cors",
-      });
-      setComments(await searchRes.json());
-    } catch (err) {
-      console.log(err);
-      setIsError(true);
-    }
+      if (postId === null) {
+        // prevent fetching if error
+        setIsError(true);
+        return;
+      }
+      try {
+        const searchRes = await window.fetch(apiUrl, {
+          body: JSON.stringify({ searchInput }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          mode: "cors",
+        });
+        if (!searchRes.ok) {
+          throw new Error(`api error: ${searchRes.status}`);
+        }
+        setComments(await searchRes.json());
+      } catch (err) {
+        console.log(err);
+        setIsError(true);
+        return;
+      }
+
+      setIsError(false);
+    })();
   }, [searchInput]);
   return (
-    <div className="App" className={classes.grow}>
+    <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
@@ -142,7 +149,7 @@ function App() {
         </Toolbar>
       </AppBar>
       <div>
-        {isError ? (
+        {isError && searchInput !== "" ? (
           <List>
             <ListItem>
               <ListItemText

@@ -3,6 +3,13 @@ import express = require("express");
 
 import fetch, { Response } from "node-fetch";
 
+const cors = require("cors")({
+  origin: [
+    "https://dcard-author-only-viewer.web.app",
+    "https://dcard-author-only-viewer.firebaseapp.com",
+  ],
+});
+
 const matchers: RegExp[] = [
   /^(\d+)$/,
   /https:\/\/[\w\.]+\.dcard.tw\/f\/[\w]+\/p\/(\d+)/,
@@ -71,7 +78,7 @@ async function getAllAuthorCommentsByPost(
       }
     } catch (err) {
       logger.error(
-        `unhendled server error: cannot fetcg comments: ${postId}: error ${err}`
+        `unhendled server error: cannot fetch comments: ${postId}: error ${err}`
       );
       console.error(err);
       res.sendStatus(500);
@@ -102,6 +109,8 @@ async function getAllAuthorCommentsByPost(
   return;
 }
 
-exports.getAllAuthorCommentsByPost = https.onRequest(
-  getAllAuthorCommentsByPost
-);
+exports.getAllAuthorCommentsByPost = https.onRequest((req, res) => {
+  return cors(req, res, () => {
+    getAllAuthorCommentsByPost(req, res);
+  });
+});
