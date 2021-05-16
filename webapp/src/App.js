@@ -163,8 +163,8 @@ function App() {
             {comments.map((comment) => (
               <ListItem alignItems="flex-start">
                 <ListItemText
-                  primary={"B" + comment.floor}
-                  secondary={comment.content}
+                  secondary={"B" + comment.floor}
+                  primary={comment.content}
                 />
               </ListItem>
             ))}
