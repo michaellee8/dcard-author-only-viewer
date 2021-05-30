@@ -164,7 +164,9 @@ function App() {
               <ListItem alignItems="flex-start">
                 <ListItemText
                   secondary={"B" + comment.floor}
-                  primary={comment.content}
+                  primary={comment.content.split("\n").map((t) => (
+                    <p>{t}</p>
+                  ))}
                 />
               </ListItem>
             ))}
